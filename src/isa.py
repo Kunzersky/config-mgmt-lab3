@@ -43,3 +43,10 @@ OPERAND_COUNTS = {
     "STORE_MEM": 2,
     "ADD": 3,
 }
+
+OPERAND_WIDTHS = {
+    "LOAD_CONST": (32, 32),
+    "LOAD_MEM": (32, 8, 32),
+    "STORE_MEM": (32, 32),
+    "ADD": (32, 32, 32),
+}
