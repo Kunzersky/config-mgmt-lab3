@@ -48,6 +48,7 @@ MNEMONIC_CODES = {
     "STORE_MEM": OP_STORE_MEM,
     "ADD": OP_ADD,
 }
+OPCODE_MNEMONICS = {code: name for name, code in MNEMONIC_CODES.items()}
 
 OPERAND_COUNTS = {
     "LOAD_CONST": 2,
