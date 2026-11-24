@@ -47,6 +47,30 @@ def test_memory_operations_and_separate_code_memory() -> None:
     assert memory.code_mem == encode_program(assemble(source))
 
 
+def test_addition_example_stores_indirect_sum() -> None:
+    """Add the direct and indirect operands into the destination cell."""
+    source = (PROJECT_ROOT / "examples/alu_test.asm").read_text(
+        encoding="utf-8"
+    )
+    memory, count = _run_source(source)
+    assert count == 4
+    assert memory.read_data(400) == 13
+
+
+def test_addition_wraps_to_a_32_bit_word() -> None:
+    """Discard carry beyond the 32-bit data-word width."""
+    source = "\n".join(
+        [
+            "LOAD_CONST 100, 4294967295",
+            "LOAD_CONST 200, 1",
+            "LOAD_CONST 300, 200",
+            "ADD 400, 100, 300",
+        ]
+    )
+    memory, _ = _run_source(source)
+    assert memory.read_data(400) == 0
+
+
 def test_csv_dump_supports_address_range(tmp_path) -> None:
     """Dump the requested half-open data-memory interval in CSV."""
     memory = Memory()
