@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 
 from src.assembler import assemble
+from src.codegen import encode_instruction, encode_program
 from src.isa import MNEMONIC_CODES, Instruction
 
 FIELD_NAMES = {
@@ -42,11 +43,6 @@ def _format_instruction(instruction: Instruction) -> str:
     return f"{instruction.mnemonic}: " + ", ".join(fields)
 
 
-def _format_ir(instruction: Instruction) -> str:
-    operands = ", ".join(str(value) for value in instruction.operands)
-    return f"{instruction.mnemonic} {operands}".rstrip()
-
-
 def main(argv: list[str] | None = None) -> int:
     """Run the command-line application.
 
@@ -64,11 +60,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.test:
         for instruction in instructions:
             print(_format_instruction(instruction))
+            print(encode_instruction(instruction).hex(" "))
         return 0
     if not args.output:
         parser.error("asm requires --output unless --test is used")
-    text = "\n".join(_format_ir(item) for item in instructions)
-    Path(args.output).write_text(text + "\n", encoding="utf-8")
+    Path(args.output).write_bytes(encode_program(instructions))
     print(f"Assembled {len(instructions)} instructions")
     return 0
 
