@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Callable
 
 from src.codegen import decode_instruction
-from src.constants import MIN_UNSIGNED, ONE
+from src.constants import MASK_32, MIN_UNSIGNED, ONE
 from src.isa import Instruction
 from src.memory import Memory
 
@@ -49,6 +49,7 @@ def execute_instruction(memory: Memory, instruction: Instruction) -> None:
         "LOAD_CONST": _load_const,
         "LOAD_MEM": _load_mem,
         "STORE_MEM": _store_mem,
+        "ADD": _add,
     }
     handler = handlers.get(instruction.mnemonic)
     if handler is None:
@@ -71,3 +72,11 @@ def _store_mem(memory: Memory, instruction: Instruction) -> None:
     base, source = instruction.operands
     destination = memory.read_data(base)
     memory.write_data(destination, memory.read_data(source))
+
+
+def _add(memory: Memory, instruction: Instruction) -> None:
+    destination, left_address, indirect_address = instruction.operands
+    left = memory.read_data(left_address)
+    right_address = memory.read_data(indirect_address)
+    right = memory.read_data(right_address)
+    memory.write_data(destination, (left + right) & MASK_32)
