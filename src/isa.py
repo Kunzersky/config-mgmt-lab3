@@ -4,6 +4,18 @@ from dataclasses import dataclass
 
 from src.constants import (
     ADD_SIZE,
+    FIELD_A_OFFSET,
+    FIELD_A_WIDTH,
+    FIELD_ADD_D_OFFSET,
+    FIELD_ADD_D_WIDTH,
+    FIELD_B_OFFSET,
+    FIELD_B_WIDTH,
+    FIELD_C8_OFFSET,
+    FIELD_C8_WIDTH,
+    FIELD_C_OFFSET,
+    FIELD_C_WIDTH,
+    FIELD_D_OFFSET,
+    FIELD_D_WIDTH,
     LOAD_CONST_SIZE,
     LOAD_MEM_SIZE,
     OP_ADD,
@@ -50,3 +62,26 @@ OPERAND_WIDTHS = {
     "STORE_MEM": (32, 32),
     "ADD": (32, 32, 32),
 }
+
+FIELD_LAYOUTS = {
+    "LOAD_CONST": (
+        (FIELD_B_OFFSET, FIELD_B_WIDTH),
+        (FIELD_C_OFFSET, FIELD_C_WIDTH),
+    ),
+    "LOAD_MEM": (
+        (FIELD_B_OFFSET, FIELD_B_WIDTH),
+        (FIELD_C8_OFFSET, FIELD_C8_WIDTH),
+        (FIELD_D_OFFSET, FIELD_D_WIDTH),
+    ),
+    "STORE_MEM": (
+        (FIELD_B_OFFSET, FIELD_B_WIDTH),
+        (FIELD_C_OFFSET, FIELD_C_WIDTH),
+    ),
+    "ADD": (
+        (FIELD_B_OFFSET, FIELD_B_WIDTH),
+        (FIELD_C_OFFSET, FIELD_C_WIDTH),
+        (FIELD_ADD_D_OFFSET, FIELD_ADD_D_WIDTH),
+    ),
+}
+
+OPCODE_LAYOUT = (FIELD_A_OFFSET, FIELD_A_WIDTH)
