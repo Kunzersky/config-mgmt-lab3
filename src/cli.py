@@ -15,7 +15,9 @@ FIELD_NAMES = {
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="УВМ assembler and interpreter")
+    parser = argparse.ArgumentParser(
+        description="УВМ assembler and interpreter",
+    )
     commands = parser.add_subparsers(dest="command", required=True)
     asm_parser = commands.add_parser("asm", help="assemble a text program")
     asm_parser.add_argument("--input", required=True, help="assembly source")
