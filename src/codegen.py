@@ -9,7 +9,7 @@ from src.isa import (
     OPERAND_COUNTS,
     Instruction,
 )
-from src.constants import MIN_UNSIGNED, OPCODE_MASK
+from src.constants import MIN_UNSIGNED, ONE, OPCODE_MASK
 
 
 def encode_instruction(instruction: Instruction) -> bytes:
@@ -53,7 +53,7 @@ def _insert_field(
     layout: tuple[int, int],
 ) -> int:
     offset, width = layout
-    if value < MIN_UNSIGNED or value >= 1 << width:
+    if value < MIN_UNSIGNED or value >= ONE << width:
         raise ValueError(f"value {value} does not fit in {width} bits")
     return bit_value | value << offset
 

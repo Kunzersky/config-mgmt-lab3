@@ -1,5 +1,11 @@
 """Text assembler for the educational virtual machine."""
 
+from src.constants import (
+    INSTRUCTION_PART_COUNT,
+    MIN_UNSIGNED,
+    ONE,
+    OPERAND_TEXT_INDEX,
+)
 from src.isa import Instruction, MNEMONIC_CODES, OPERAND_COUNTS, OPERAND_WIDTHS
 
 
@@ -31,7 +37,11 @@ def _parse_line(raw_line: str, line_number: int) -> Instruction | None:
     mnemonic = parts[0]
     if mnemonic not in MNEMONIC_CODES:
         raise ValueError(f"line {line_number}: unknown mnemonic {mnemonic!r}")
-    operand_text = parts[1] if len(parts) == 2 else ""
+    operand_text = (
+        parts[OPERAND_TEXT_INDEX]
+        if len(parts) == INSTRUCTION_PART_COUNT
+        else ""
+    )
     operands = _parse_operands(operand_text, mnemonic, line_number)
     _validate_operands(operands, mnemonic, line_number)
     return Instruction(mnemonic, tuple(operands), line_number)
@@ -65,7 +75,7 @@ def _validate_operands(
 ) -> None:
     widths = OPERAND_WIDTHS[mnemonic]
     for index, (value, width) in enumerate(zip(operands, widths), start=1):
-        if value < 0 or value >= 1 << width:
+        if value < MIN_UNSIGNED or value >= ONE << width:
             raise ValueError(
                 f"line {line_number}: operand {index} must fit in {width} bits"
             )

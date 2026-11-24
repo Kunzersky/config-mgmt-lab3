@@ -5,6 +5,7 @@ from pathlib import Path
 
 from src.assembler import assemble
 from src.codegen import encode_instruction, encode_program
+from src.constants import RANGE_ENDPOINT_COUNT
 from src.interpreter import Interpreter
 from src.isa import MNEMONIC_CODES, Instruction
 from src.memory import Memory
@@ -44,7 +45,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
 def _parse_range(value: str) -> tuple[int, int]:
     parts = value.split(":")
-    if len(parts) != 2:
+    if len(parts) != RANGE_ENDPOINT_COUNT:
         raise argparse.ArgumentTypeError("range must use start:end")
     try:
         return int(parts[0], 0), int(parts[1], 0)

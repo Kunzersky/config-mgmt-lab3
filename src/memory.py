@@ -4,7 +4,7 @@ import csv
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from src.constants import ADDRESS_SPACE_SIZE, MASK_32
+from src.constants import ADDRESS_SPACE_SIZE, MASK_32, MIN_UNSIGNED
 
 
 @dataclass
@@ -40,7 +40,7 @@ class Memory:
             ValueError: If the address or value is outside the valid range.
         """
         _validate_address(address)
-        if value < 0 or value > MASK_32:
+        if value < MIN_UNSIGNED or value > MASK_32:
             raise ValueError(f"value is outside the 32-bit range: {value}")
         self.data_mem[address] = value
 
@@ -72,7 +72,7 @@ class Memory:
 
 
 def _validate_address(address: int) -> None:
-    if address < 0 or address >= ADDRESS_SPACE_SIZE:
+    if address < MIN_UNSIGNED or address >= ADDRESS_SPACE_SIZE:
         raise ValueError(f"address is outside the 32-bit range: {address}")
 
 
@@ -82,9 +82,15 @@ def _select_addresses(
 ) -> list[int] | range:
     if address_range is None:
         return sorted(
-            address for address, value in data_mem.items() if value != 0
+            address
+            for address, value in data_mem.items()
+            if value != MIN_UNSIGNED
         )
     start, end = address_range
-    if start < 0 or end < start or end > ADDRESS_SPACE_SIZE:
+    if (
+        start < MIN_UNSIGNED
+        or end < start
+        or end > ADDRESS_SPACE_SIZE
+    ):
         raise ValueError("invalid address range")
     return range(start, end)
