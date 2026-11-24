@@ -11,6 +11,14 @@ from src.interpreter import Interpreter
 from src.memory import Memory
 
 PROJECT_ROOT = Path(__file__).parents[1]
+ARRAY_LENGTH = 10
+ARRAY_DESTINATION = 300
+EXPECTED_COPY_INSTRUCTION_COUNT = 21
+EXPECTED_MEMORY_INSTRUCTION_COUNT = 4
+EXPECTED_ADD_INSTRUCTION_COUNT = 4
+EXPECTED_STORED_VALUE = 123
+EXPECTED_ADD_RESULT = 13
+EXPECTED_OVERFLOW_RESULT = 0
 
 
 def _run_source(source: str) -> tuple[Memory, int]:
@@ -26,8 +34,11 @@ def test_copy_array_example_round_trips_ten_values() -> None:
     )
     memory, count = _run_source(source)
     expected = [17, 28, 39, 40, 51, 62, 73, 84, 95, 106]
-    assert count == 21
-    assert [memory.read_data(300 + index) for index in range(10)] == expected
+    assert count == EXPECTED_COPY_INSTRUCTION_COUNT
+    assert [
+        memory.read_data(ARRAY_DESTINATION + index)
+        for index in range(ARRAY_LENGTH)
+    ] == expected
 
 
 def test_memory_operations_and_separate_code_memory() -> None:
@@ -41,9 +52,9 @@ def test_memory_operations_and_separate_code_memory() -> None:
         ]
     )
     memory, count = _run_source(source)
-    assert count == 4
-    assert memory.read_data(400) == 123
-    assert memory.read_data(20) == 123
+    assert count == EXPECTED_MEMORY_INSTRUCTION_COUNT
+    assert memory.read_data(400) == EXPECTED_STORED_VALUE
+    assert memory.read_data(20) == EXPECTED_STORED_VALUE
     assert memory.code_mem == encode_program(assemble(source))
 
 
@@ -53,8 +64,8 @@ def test_addition_example_stores_indirect_sum() -> None:
         encoding="utf-8"
     )
     memory, count = _run_source(source)
-    assert count == 4
-    assert memory.read_data(400) == 13
+    assert count == EXPECTED_ADD_INSTRUCTION_COUNT
+    assert memory.read_data(400) == EXPECTED_ADD_RESULT
 
 
 def test_addition_wraps_to_a_32_bit_word() -> None:
@@ -68,7 +79,7 @@ def test_addition_wraps_to_a_32_bit_word() -> None:
         ]
     )
     memory, _ = _run_source(source)
-    assert memory.read_data(400) == 0
+    assert memory.read_data(400) == EXPECTED_OVERFLOW_RESULT
 
 
 def test_csv_dump_supports_address_range(tmp_path) -> None:

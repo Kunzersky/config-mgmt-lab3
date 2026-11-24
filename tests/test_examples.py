@@ -8,6 +8,10 @@ import pytest
 from src.cli import main
 
 PROJECT_ROOT = Path(__file__).parents[1]
+SUCCESS_EXIT_CODE = 0
+VECTOR_LENGTH = 10
+RESULT_START_ADDRESS = 400
+RESULT_END_ADDRESS = RESULT_START_ADDRESS + VECTOR_LENGTH
 VECTOR_RESULTS = [
     list(range(129, 139)),
     [
@@ -58,7 +62,7 @@ def test_vector_addition_cli_dump(
             "--output",
             str(machine_code),
         ]
-    ) == 0
+    ) == SUCCESS_EXIT_CODE
     assert main(
         [
             "run",
@@ -67,13 +71,15 @@ def test_vector_addition_cli_dump(
             "--dump",
             str(dump),
             "--range",
-            "400:410",
+            f"{RESULT_START_ADDRESS}:{RESULT_END_ADDRESS}",
         ]
-    ) == 0
+    ) == SUCCESS_EXIT_CODE
     with dump.open(encoding="utf-8", newline="") as output_file:
         rows = list(csv.DictReader(output_file))
-    assert len(rows) == 10
-    assert [int(row["addr"]) for row in rows] == list(range(400, 410))
+    assert len(rows) == VECTOR_LENGTH
+    assert [int(row["addr"]) for row in rows] == list(
+        range(RESULT_START_ADDRESS, RESULT_END_ADDRESS)
+    )
     assert [int(row["value_dec"]) for row in rows] == expected
     assert [row["value_hex"] for row in rows] == [
         f"0x{value:08x}" for value in expected
